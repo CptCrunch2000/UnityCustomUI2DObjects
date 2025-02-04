@@ -3,33 +3,32 @@ The project contains 3 custom Unity UI/2DObject prefabs.
 
 ## Pie Chart  ✨.
 ![PieChart](/ReadMe/PieChart.png)
+A fully dynamic pie chart rendered as a 2D sprite by a radial fill shaders.
+
+##### Features
+- Rendered as sprite (No UI!)
+- Add/Delete/Update pieces and change radius at runtime
+- Set flexible piece lables
 
 ## FPS-Counter  ✨.
 ![FpsCounter](/ReadMe/FpsCounter.png)
+A simple fps counter & a professional fps graph with min/avg/max values. (UI) 
 
 ## Fancy Text  ✨.
 ![FancyText](/ReadMe/FancyText.png)
+Sinuswave scrolling text like the old school demos from the 90's and a type writer simulation is also included. (UI) 
 
-
-## Features
-- Clean, Simple and Modern UI Design.
-- Uses No CSS or JavaScript Frameworks or libraries as dependencies.
-- Built with only HTML, CSS and a bit of JavaScript 🔨.
-- Well Organized Documentation.
-- Keyboard support.
-- Fully Responsive.
-- Loads fast ⚡.
+##### Features
+- Set up a list of messages for scrolling and waiting timer
+- Set scrolling direction & speed
+- Use sinuswave settings (height, style, speed) for customization.
+- Set color gradient to a letter
 
 ## Getting Started 🚀
 
-You'll need [Git](https://git-scm.com) to be installed on your computer. 
-```
 # Clone this repository
-$ git clone https://cptcrunch2000.github.io/github-portfolio/
+```
+$ git clone https://github.com/CptCrunch2000/UnityCustomUI2DObjects
 ```
 
-If you don't have Git installed or you don't like using the terminal then you can download the [zip](https://github.com/nisarhassan12/portfolio-template/archive/master.zip) and extract that and open the extracted folder in the code editor of your your choice.
-
-Go to `index.html` and fill your information.
-
-To view the live site click [here &rarr;](https://cptcrunch2000.github.io/github-portfolio/)
+Show portfolio [here &rarr;](https://cptcrunch2000.github.io/github-portfolio/)

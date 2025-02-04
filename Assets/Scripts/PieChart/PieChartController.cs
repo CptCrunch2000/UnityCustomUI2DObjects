@@ -54,15 +54,17 @@ public class PieChartController : MonoBehaviour
 
     public void AddPieChartPiece()
     {
-        // var x = new PieChartPiece
-        // {
-        //     angle = 180f,
-        //     color = Color.cyan,
-        //     text = "new piece",
-        //     textSize = 6f,
-        //     textRotation = 90f,
-        //     piece = 
-        // }
+        var x = new PieChartPiece
+        {
+            angle = 180f,
+            color = Color.cyan,
+            text = "new piece",
+            textSize = 6f,
+            textRotation = 90f,
+            piece = null
+        };
+        CreatePieChartPiece(x);
+        pieChartPiecesList.Add(x);
     }
 
     public void RemovePieChartPiece(int index)
@@ -106,39 +108,51 @@ public class PieChartController : MonoBehaviour
 
     private void CreatePieChartPieces()
     {
-        float previousAngle = 0f;
+        circleBackground.transform.localScale = new Vector3(radius*2, radius*2, 1);
+        circleBackground.GetComponent<SpriteRenderer>().color = circleBackgroundColor;
+
         foreach (var p in pieChartPiecesList) 
         {
-            circleBackground.transform.localScale = new Vector3(radius*2, radius*2, 1);
-            circleBackground.GetComponent<SpriteRenderer>().color = circleBackgroundColor;
+            CreatePieChartPiece(p);
+        }
+    }
+
+    private void CreatePieChartPiece(PieChartPiece pcp)
+    {
+            float previousAngle = pieChartPiecesList.Where(x => x.piece != null).Sum(p => p.angle);
+            
+            if (previousAngle + pcp.angle > 360f) 
+            {
+                Debug.Log("Error: Can't create piece. Maximal 360 degrees will be exceeded!");
+                return;
+            }
 
             var c = Instantiate(circle, Vector3.zero, Quaternion.identity);
             c.transform.localScale = new Vector3(radius*2, radius*2, 1);
             TMP_Text t = c.transform.GetChild(0).GetComponent<TMP_Text>();
 
-            t.text = p.text;
+            t.text = pcp.text;
 
             Vector3 textPos = new Vector3(
-                Mathf.Sin(((p.angle / 2) + previousAngle) * Mathf.Deg2Rad) * radius / 2,
-                Mathf.Cos(((p.angle / 2) + previousAngle) * Mathf.Deg2Rad) * radius / 2,
+                Mathf.Sin(((pcp.angle / 2) + previousAngle) * Mathf.Deg2Rad) * radius / 2,
+                Mathf.Cos(((pcp.angle / 2) + previousAngle) * Mathf.Deg2Rad) * radius / 2,
                 -1);
 
             t.transform.position = textPos;
-            t.fontSize = p.textSize;
+            t.fontSize = pcp.textSize;
 
             Renderer r = c.GetComponent<Renderer>();
             r.material = null;
             r.material = new Material(circleMaterial);
-            r.sharedMaterial.SetColor("_Color", p.color);
+            r.sharedMaterial.SetColor("_Color", pcp.color);
             r.sharedMaterial.SetFloat("_Angle", 90);
             r.sharedMaterial.SetFloat("_Arc1", previousAngle);
-            previousAngle += p.angle;
+            previousAngle += pcp.angle;
             
             r.sharedMaterial.SetFloat("_Arc2", 360f - previousAngle);
-            t.transform.rotation = Quaternion.Euler(new Vector3(0, 0, (p.angle/2) + (p.textRotation + 360f - previousAngle)));
+            t.transform.rotation = Quaternion.Euler(new Vector3(0, 0, (pcp.angle/2) + (pcp.textRotation + 360f - previousAngle)));
             c.transform.SetParent(transform);
-            p.piece = c;
-        }
+            pcp.piece = c;
     }
 }
 

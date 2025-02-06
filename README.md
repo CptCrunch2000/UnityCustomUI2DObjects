@@ -8,8 +8,10 @@ A fully dynamic pie chart rendered as a 2D sprite by a radial fill shaders.
 
 ##### Features
 - Rendered as sprite (No UI!)
-- Add/Delete/Update pieces and change radius at runtime
+- Add/Delete pieces and change radius at runtime
 - Set flexible piece lables
+- Item legend
+- Event system
 
 ## FPS-Counter  ✨.
 ![FpsCounter](/ReadMe/FpsCounter.png)

@@ -27,8 +27,11 @@ public class PieChartController : MonoBehaviour
         if (circle == null) { Debug.Log("Circle prefab not found"); }
 
         circleMaterial = Resources.Load("PieChart/RadialFillMaterial") as Material;
-        if (circleMaterial == null) { Debug.Log("RadialFillMaterial not found"); }        
+        if (circleMaterial == null) { Debug.Log("RadialFillMaterial not found"); }                
+    }
 
+    private void Start()
+    {
         CreatePieChartPieces();
     }
 
@@ -53,24 +56,26 @@ public class PieChartController : MonoBehaviour
     }
 
     public void AddPieChartPiece()
-    {
+    {        
         var x = new PieChartPiece
         {
-            angle = 180f,
-            color = Color.cyan,
-            text = "new piece",
+            angle = 30f,
+            color = new Color( UnityEngine.Random.Range(0f, 2f), UnityEngine.Random.Range(0f, 2f), UnityEngine.Random.Range(0f, 2f)), // Color.cyan,
+            text = "new item",
             textSize = 6f,
             textRotation = 90f,
+            legendText = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr.",
             piece = null
         };
-        CreatePieChartPiece(x);
-        pieChartPiecesList.Add(x);
+        
+        if(CreatePieChartPiece(x))
+        {
+            pieChartPiecesList.Add(x);
+        }        
     }
 
     public void RemovePieChartPiece(int index)
     {
-        bool rearrangePieChart = true;
-
         if (index > pieChartPiecesList.Count-1) 
         {
             Debug.Log($"Error removing piece at index ({index}. Index out of range!)");
@@ -80,28 +85,26 @@ public class PieChartController : MonoBehaviour
         if (!pieChartPiecesList[index].piece.IsDestroyed())
         {
             Destroy(pieChartPiecesList[index].piece);
-            pieChartPiecesList.RemoveAt(index);
+            pieChartPiecesList.RemoveAt(index);            
+            Events.onPieChartPieceRemove.Publish(index);
+            float previousAngle = 0f;
 
-            if(rearrangePieChart)
+            foreach (var p in pieChartPiecesList) 
             {
-                float previousAngle = 0f;
-                foreach (var p in pieChartPiecesList) 
-                {
-                    Vector3 textPos = new Vector3(
-                    Mathf.Sin(((p.angle / 2) + previousAngle) * Mathf.Deg2Rad) * radius / 2,
-                    Mathf.Cos(((p.angle / 2) + previousAngle) * Mathf.Deg2Rad) * radius / 2,
-                    -1);
+                Vector3 textPos = new Vector3(
+                Mathf.Sin(((p.angle / 2) + previousAngle) * Mathf.Deg2Rad) * radius / 2,
+                Mathf.Cos(((p.angle / 2) + previousAngle) * Mathf.Deg2Rad) * radius / 2,
+                -1);
 
-                    TMP_Text t = p.piece.transform.GetChild(0).GetComponent<TMP_Text>();
-                    t.transform.position = textPos;
+                TMP_Text t = p.piece.transform.GetChild(0).GetComponent<TMP_Text>();
+                t.transform.position = textPos;
 
-                    Renderer r = p.piece.GetComponent<Renderer>();
-                    r.sharedMaterial.SetFloat("_Arc1", previousAngle);
-                    previousAngle += p.angle;
+                Renderer r = p.piece.GetComponent<Renderer>();
+                r.sharedMaterial.SetFloat("_Arc1", previousAngle);
+                previousAngle += p.angle;
             
-                    r.sharedMaterial.SetFloat("_Arc2", 360f - previousAngle);                    
-                    t.transform.rotation = Quaternion.Euler(new Vector3(0, 0, (p.angle/2) + (p.textRotation + 360f - previousAngle)));
-                }
+                r.sharedMaterial.SetFloat("_Arc2", 360f - previousAngle);                    
+                t.transform.rotation = Quaternion.Euler(new Vector3(0, 0, (p.angle/2) + (p.textRotation + 360f - previousAngle)));
             }
         }        
     }
@@ -117,14 +120,14 @@ public class PieChartController : MonoBehaviour
         }
     }
 
-    private void CreatePieChartPiece(PieChartPiece pcp)
+    private bool CreatePieChartPiece(PieChartPiece pcp)
     {
             float previousAngle = pieChartPiecesList.Where(x => x.piece != null).Sum(p => p.angle);
             
             if (previousAngle + pcp.angle > 360f) 
             {
                 Debug.Log("Error: Can't create piece. Maximal 360 degrees will be exceeded!");
-                return;
+                return false;
             }
 
             var c = Instantiate(circle, Vector3.zero, Quaternion.identity);
@@ -153,6 +156,9 @@ public class PieChartController : MonoBehaviour
             t.transform.rotation = Quaternion.Euler(new Vector3(0, 0, (pcp.angle/2) + (pcp.textRotation + 360f - previousAngle)));
             c.transform.SetParent(transform);
             pcp.piece = c;
+
+            Events.onPieChartPieceAdded.Publish(pcp);
+            return true;
     }
 }
 
@@ -173,6 +179,9 @@ public class PieChartPiece
 
     [SerializeField]
     public float textRotation;
+
+    [SerializeField]
+    public string legendText;
 
     [NonSerialized]
     public GameObject piece;
